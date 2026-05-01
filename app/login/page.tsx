@@ -1,20 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [company, setCompany] = useState("");
 
   const signup = async () => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      alert("User created successfully");
+      const userCred = await createUserWithEmailAndPassword(auth, email, password);
+
+      // Save user company
+      await setDoc(doc(db, "users", userCred.user.uid), {
+        email,
+        company,
+      });
+
+      alert("User created");
     } catch (err: any) {
       alert(err.message);
     }
@@ -31,7 +40,12 @@ export default function Login() {
 
   return (
     <div style={{ padding: 30 }}>
-      <h2>IssueDek Login</h2>
+      <h2>Login / Signup</h2>
+
+      <input
+        placeholder="Company name"
+        onChange={(e) => setCompany(e.target.value)}
+      /><br /><br />
 
       <input
         placeholder="Email"

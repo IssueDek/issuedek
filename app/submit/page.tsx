@@ -7,18 +7,27 @@ import { collection, addDoc } from "firebase/firestore";
 export default function Submit() {
   const [company, setCompany] = useState("");
   const [issue, setIssue] = useState("");
+  const [category, setCategory] = useState("");
 
   const submitComplaint = async () => {
+    if (!company || !issue) {
+      alert("Please fill all required fields");
+      return;
+    }
+
     try {
       await addDoc(collection(db, "complaints"), {
         company,
         issue,
+        category,
         createdAt: new Date(),
       });
 
-      alert("Complaint submitted");
+      alert("Complaint submitted successfully");
+
       setCompany("");
       setIssue("");
+      setCategory("");
     } catch (error: any) {
       alert(error.message);
     }
@@ -32,13 +41,22 @@ export default function Submit() {
         placeholder="Company name"
         value={company}
         onChange={(e) => setCompany(e.target.value)}
-      /><br /><br />
+      />
+      <br /><br />
 
       <textarea
         placeholder="Describe your issue"
         value={issue}
         onChange={(e) => setIssue(e.target.value)}
-      /><br /><br />
+      />
+      <br /><br />
+
+      <input
+        placeholder="Category (delay, damage, service)"
+        value={category}
+        onChange={(e) => setCategory(e.target.value)}
+      />
+      <br /><br />
 
       <button onClick={submitComplaint}>Submit</button>
     </div>
